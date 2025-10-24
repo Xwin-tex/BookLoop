@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookLoop - Intercambio de Libros Universitarios Colombia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #f9c80e;
+            --primary-light: #fdd835;
+            --primary-dark: #c9a000;
+            --secondary-color: #e8f4f8;
+            --text-color: #2d3748;
+            --text-light: #718096;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--white);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            min-height: calc(100vh - 140px);
+            padding: 2rem 0;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home View Styles */
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(249, 200, 14, 0.2);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--secondary-color);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .book-cover {
+            height: 300px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .book-card:hover .book-cover img {
+            transform: scale(1.05);
+        }
+
+        .book-info {
+            padding: 1rem;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .book-owner {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .book-owner:hover {
+            color: var(--primary-color);
+        }
+
+        .book-owner i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Book Details View */
+        .book-details-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .book-details-header {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .book-details-cover {
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+            height: 400px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .book-details-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-details-info {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .book-details-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .book-details-author {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .meta-item i {
+            width: 20px;
+            margin-right: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .meta-item.clickable {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .meta-item.clickable:hover {
+            color: var(--primary-color);
+        }
+
+        .book-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+
+        /* Profile View */
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 2rem;
+            color: var(--white);
+            position: relative;
+        }
+
+        .profile-header-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .profile-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .profile-body {
+            padding: 2rem;
+        }
+
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+
+        .profile-section h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .profile-bio {
+            background-color: var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            line-height: 1.7;
+        }
+
+        .profile-books {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .profile-book-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .profile-book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .profile-book-cover {
+            height: 200px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-book-card:hover .profile-book-cover img {
+            transform: scale(1.05);
+        }
+
+        .profile-book-info {
+            padding: 1rem;
+        }
+
+        .profile-book-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .profile-book-price {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Chat View */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 200px);
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .chat-sidebar {
+            width: 300px;
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .chat-sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .chat-list {
+            list-style: none;
+        }
+
+        .chat-item {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-item:hover, .chat-item.active {
+            background-color: var(--primary-light);
+            color: var(--white);
+        }
+
+        .chat-item-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .chat-item-preview {
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            margin-right: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-header-avatar:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .chat-header-info h3 {
+            margin-bottom: 0.2rem;
+        }
+
+        .chat-header-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            background-color: var(--secondary-color);
+        }
+
+        .message.sent .message-bubble {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid var(--secondary-color);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        .chat-input button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-input button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                padding: 0.5rem 0;
+            }
+
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .book-details-header {
+                flex-direction: column;
+            }
+
+            .book-details-cover {
+                max-width: 100%;
+            }
+
+            .profile-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .chat-container {
+                flex-direction: column;
+                height: calc(100vh - 140px);
+            }
+
+            .chat-sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .book-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-books {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Rating stars */
+        .rating {
+            display: flex;
+            gap: 0.2rem;
+            color: var(--primary-color);
+        }
+
+        .rating i {
+            font-size: 1rem;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            border: 3px solid var(--secondary-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-book-open"></i>
+                    <span>BookLoop Colombia</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a class="nav-link active" data-view="home">Inicio</a></li>
+                        <li><a class="nav-link" data-view="book-details">Detalles</a></li>
+                        <li><a class="nav-link" data-view="profile">Perfil</a></li>
+                        <li><a class="nav-link" data-view="chat">Mensajes</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Home View -->
+            <div id="home" class="view active">
+                <div class="search-section">
+                    <div class="search-container">
+                        <input type="text" class="search-bar" id="searchBar" placeholder="Buscar por título o autor...">
+                        <button class="search-btn" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="textbooks">Textos</button>
+                    <button class="filter-btn" data-filter="fiction">Ficción</button>
+                    <button class="filter-btn" data-filter="non-fiction">No Ficción</button>
+                    <button class="filter-btn" data-filter="reference">Referencia</button>
+                </div>
+
+                <div class="books-grid" id="booksGrid">
+                    <!-- Books will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Book Details View -->
+            <div id="book-details" class="view">
+                <div class="book-details-container">
+                    <div class="book-details-header">
+                        <div class="book-details-cover">
+                            <img src="https://picsum.photos/seed/cienanos/400/600.jpg" alt="Portada del libro" id="bookDetailsCover">
+                        </div>
+                        <div class="book-details-info">
+                            <h2 class="book-details-title" id="bookDetailsTitle">Cien años de soledad</h2>
+                            <p class="book-details-author" id="bookDetailsAuthor">por Gabriel García Márquez</p>
+                            
+                            <div class="book-meta">
+                                <div class="meta-item clickable" id="bookDetailsOwnerItem">
+                                    <i class="fas fa-user"></i>
+                                    <span id="bookDetailsOwner">Carlos Rodríguez</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-university"></i>
+                                    <span id="bookDetailsUniversity">Universidad Nacional de Colombia</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span id="bookDetailsCategory">Ficción</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    <span id="bookDetailsCondition">Buen Estado</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span id="bookDetailsPrice">$45.000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="book-description" id="bookDetailsDescription">
+                                La saga de la familia Buendía, cuyos integrantes están condenados a cien años de soledad. Una obra maestra de la literatura latinoamericana que narra la historia de Macondo, un pueblo mítico creado por García Márquez.
+                            </div>
+                            
+                            <div class="book-actions">
+                                <button class="btn btn-primary" id="contactOwnerBtn">
+                                    <i class="fas fa-comment"></i>
+                                    Contactar Dueño
+                                </button>
+                                <button class="btn btn-secondary" id="exchangeBtn">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    Solicitar Intercambio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile View -->
+            <div id="profile" class="view">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-header-content">
+                            <div class="profile-avatar" id="profileAvatar">CR</div>
+                            <div class="profile-info">
+                                <h1 id="profileName">Carlos Rodríguez</h1>
+                                <p id="profileUniversity">Universidad Nacional de Colombia</p>
+                                <p id="profileCareer">Ingeniería de Sistemas</p>
+                                <div class="rating" id="profileRating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span>4.5 (23 intercambios)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-number" id="profileBooksCount">8</div>
+                                <div class="stat-label">Libros</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">23</div>
+                                <div class="stat-label">Intercambios</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">4.5</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-body">
+                        <div class="profile-section">
+                            <h2>Acerca de mí</h2>
+                            <div class="profile-bio" id="profileBio">
+                                Estudiante de Ingeniería de Sistemas apasionado por la literatura y la tecnología. Me encanta intercambiar libros que ya he leído para descubrir nuevas historias. Siempre busco textos de programación, algoritmos y ciencia ficción. ¡Puedes contactarme sin compromiso!
+                            </div>
+                        </div>
+                        <div class="profile-section">
+                            <h2>Mis Libros Disponibles</h2>
+                            <div class="profile-books" id="profileBooks">
+                                <!-- User's books will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat View -->
+            <div id="chat" class="view">
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <h3>Mensajes</h3>
+                        <ul class="chat-list" id="chatList">
+                            <!-- Chat items will be dynamically added here -->
+                        </ul>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-header">
+                            <div class="chat-header-left">
+                                <div class="chat-header-avatar" id="chatHeaderAvatar">CR</div>
+                                <div class="chat-header-info">
+                                    <h3 id="chatHeaderName">Carlos Rodríguez</h3>
+                                    <p id="chatHeaderBook">Cien años de soledad</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages will be dynamically added here -->
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
+                            <button id="sendMessageBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <p>&copy; 2023 BookLoop Colombia. Todos los derechos reservados.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Acerca de</a>
+                    <a href="#">Política de Privacidad</a>
+                    <a href="#">Términos de Servicio</a>
+                    <a href="#">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Sample book data with reliable image URLs
+        const booksData = [
+            {
+                id: 1,
+                title: "Cien años de soledad",
+                author: "Gabriel García Márquez",
+                owner: "Carlos Rodríguez",
+                university: "Universidad Nacional de Colombia",
+                category: "fiction",
+                condition: "Bueno",
+                price: "$45.000",
+                description: "La saga de la familia Buendía, cuyos integrantes están condenados a cien años de soledad. Una obra maestra de la literatura latinoamericana que narra la historia de Macondo.",
+                cover: "https://picsum.photos/seed/cienanos/400/600.jpg"
+            },
+            {
+                id: 2,
+                title: "El amor en los tiempos del cólera",
+                author: "Gabriel García Márquez",
+                owner: "María González",
+                university: "Universidad de los Andes",
+                category: "fiction",
+                condition: "Como Nuevo",
+                price: "$38.000",
+                description: "La historia de un amor que espera más de cincuenta años. Florentino Ariza espera a Fermina Daza durante toda su vida, demostrando que el amor verdadero puede superar cualquier obstáculo.",
+                cover: "https://picsum.photos/seed/amortiempos/400/600.jpg"
+            },
+            {
+                id: 3,
+                title: "La hojarasca",
+                author: "Gabriel García Márquez",
+                owner: "Luis Martínez",
+                university: "Universidad del Valle",
+                category: "fiction",
+                condition: "Regular",
+                price: "$25.000",
+                description: "La primera novela de García Márquez, ambientada en Macondo. Un médico muere y el pueblo se prepara para su funeral mientras recuerdan su vida.",
+                cover: "https://picsum.photos/seed/hojarasca/400/600.jpg"
+            },
+            {
+                id: 4,
+                title: "María",
+                author: "Jorge Isaacs",
+                owner: "Ana Silva",
+                university: "Universidad de Antioquia",
+                category: "fiction",
+                condition: "Bueno",
+                price: "$30.000",
+                description: "Una de las obras más importantes del romanticismo colombiano. La historia de amor entre Efraín y María en el valle del Cauca.",
+                cover: "https://picsum.photos/seed/maria/400/600.jpg"
+            },
+            {
+                id: 5,
+                title: "La vorágine",
+                author: "José Eustasio Rivera",
+                owner: "Pedro López",
+                university: "Universidad del Rosario",
+                category: "fiction",
+                condition: "Bueno",
+                price: "$35.000",
+                description: "Novela de la selva que denuncia la explotación del caucho en la Amazonía colombiana. Una obra fundamental de la literatura nacional.",
+                cover: "https://picsum.photos/seed/voragine/400/600.jpg"
+            },
+            {
+                id: 6,
+                title: "El olvido que seremos",
+                author: "Héctor Abad Faciolince",
+                owner: "Sofía Ramírez",
+                university: "Pontificia Universidad Javeriana",
+                category: "non-fiction",
+                condition: "Excelente",
+                price: "$32.000",
+                description: "Un homenaje del autor a su padre, asesinado por paramilitares. Un testimonio conmovedor sobre la violencia en Colombia.",
+                cover: "https://picsum.photos/seed/olvido/400/600.jpg"
+            },
+            {
+                id: 7,
+                title: "Delirio",
+                author: "Laura Restrepo",
+                owner: "Diego Torres",
+                university: "Universidad Industrial de Santander",
+                category: "fiction",
+                condition: "Como Nuevo",
+                price: "$28.000",
+                description: "Una novela que mezcla realidad y delirio en el Bogotá de los años 80. Aguilar busca a su esposa desaparecida en medio de la violencia urbana.",
+                cover: "https://picsum.photos/seed/delirio/400/600.jpg"
+            },
+            {
+                id: 8,
+                title: "Historia de Colombia. País fragmentado, sociedad dividida",
+                author: "Frank Safford y Marco Palacios",
+                owner: "Laura Castro",
+                university: "Universidad del Norte",
+                category: "textbooks",
+                condition: "Bueno",
+                price: "$55.000",
+                description: "Una visión completa de la historia de Colombia desde la época prehispánica hasta nuestros días. Texto fundamental para entender el país.",
+                cover: "https://picsum.photos/seed/historiacol/400/600.jpg"
+            },
+            {
+                id: 9,
+                title: "Economía Colombiana",
+                author: "José Antonio Ocampo",
+                owner: "Miguel Ángel Vargas",
+                university: "Universidad EAFIT",
+                category: "textbooks",
+                condition: "Regular",
+                price: "$48.000",
+                description: "Análisis completo de la economía colombiana, sus estructuras, desafíos y perspectivas de desarrollo. Obra de referencia para estudiantes de economía.",
+                cover: "https://picsum.photos/seed/economia/400/600.jpg"
+            },
+            {
+                id: 10,
+                title: "Manual de Derecho Constitucional Colombiano",
+                author: "Hernando Herrera Vergara",
+                owner: "Catalina Gómez",
+                university: "Universidad Externado de Colombia",
+                category: "textbooks",
+                condition: "Bueno",
+                price: "$65.000",
+                description: "Texto completo sobre la Constitución Política de Colombia de 1991. Indispensable para estudiantes de derecho.",
+                cover: "https://picsum.photos/seed/derecho/400/600.jpg"
+            },
+            {
+                id: 11,
+                title: "Los ejércitos de la noche",
+                author: "Alonso Salazar",
+                owner: "Juan Pablo Díaz",
+                university: "Universidad de Medellín",
+                category: "non-fiction",
+                condition: "Bueno",
+                price: "$30.000",
+                description: "Investigación periodística sobre las pandillas de Medellín. Un retrato crudo de la violencia juvenil en Colombia.",
+                cover: "https://picsum.photos/seed/ejercitos/400/600.jpg"
+            },
+            {
+                id: 12,
+                title: "El río de la vida",
+                author: "Tomás Carrasquilla",
+                owner: "Patricia Morales",
+                university: "Universidad del Quindío",
+                category: "fiction",
+                condition: "Regular",
+                price: "$22.000",
+                description: "Colección de cuentos que retratan la vida campesina en Antioquia. Una joya de la literatura colombiana de principios del siglo XX.",
+                cover: "https://picsum.photos/seed/rio/400/600.jpg"
+            }
+        ];
+
+        // User profiles data
+        const usersData = {
+            "Carlos Rodríguez": {
+                name: "Carlos Rodríguez",
+                university: "Universidad Nacional de Colombia",
+                career: "Ingeniería de Sistemas",
+                rating: 4.5,
+                exchanges: 23,
+                bio: "Estudiante de Ingeniería de Sistemas apasionado por la literatura y la tecnología. Me encanta intercambiar libros que ya he leído para descubrir nuevas historias. Siempre busco textos de programación, algoritmos y ciencia ficción. ¡Puedes contactarme sin compromiso!",
+                books: [1, 9, 11]
+            },
+            "María González": {
+                name: "María González",
+                university: "Universidad de los Andes",
+                career: "Literatura",
+                rating: 4.8,
+                exchanges: 31,
+                bio: "Estudiante de Literatura con una colección de más de 200 libros. Especialmente interesada en autores latinoamericanos y poesía. Me gusta organizar clubes de lectura y encuentros literarios.",
+                books: [2, 4, 7]
+            },
+            "Luis Martínez": {
+                name: "Luis Martínez",
+                university: "Universidad del Valle",
+                career: "Derecho",
+                rating: 4.2,
+                exchanges: 18,
+                bio: "Futuro abogado con pasión por la lectura de ensayos políticos y novelas históricas. Creo en el poder de las palabras para transformar la sociedad.",
+                books: [3, 5, 12]
+            },
+            "Ana Silva": {
+                name: "Ana Silva",
+                university: "Universidad de Antioquia",
+                career: "Medicina",
+                rating: 4.6,
+                exchanges: 27,
+                bio: "Estudiante de medicina que encuentra en la lectura una forma de escape y aprendizaje. Me interesa especialmente la divulgación científica y la biografía de grandes personajes.",
+                books: [4, 6, 8]
+            },
+            "Pedro López": {
+                name: "Pedro López",
+                university: "Universidad del Rosario",
+                career: "Relaciones Internacionales",
+                rating: 4.3,
+                exchanges: 22,
+                bio: "Apasionado por la geopolítica y la historia contemporánea. Busco constantemente libros que me ayuden a entender mejor el mundo que nos rodea.",
+                books: [5, 10]
+            },
+            "Sofía Ramírez": {
+                name: "Sofía Ramírez",
+                university: "Pontificia Universidad Javeriana",
+                career: "Psicología",
+                rating: 4.7,
+                exchanges: 29,
+                bio: "Psicóloga en formación interesada en la literatura como herramienta terapéutica. Me especializo en libros de desarrollo personal y novelas con profundidad psicológica.",
+                books: [6, 2, 11]
+            },
+            "Diego Torres": {
+                name: "Diego Torres",
+                university: "Universidad Industrial de Santander",
+                career: "Arquitectura",
+                rating: 4.4,
+                exchanges: 20,
+                bio: "Estudiante de arquitectura que ve en los libros una fuente de inspiración para sus diseños. Me fascina la relación entre el espacio y la narrativa.",
+                books: [7, 3, 9]
+            },
+            "Laura Castro": {
+                name: "Laura Castro",
+                university: "Universidad del Norte",
+                career: "Administración de Empresas",
+                rating: 4.5,
+                exchanges: 25,
+                bio: "Futura empresaria con amor por los libros de negocios y liderazgo. También disfruto de novelas que me enseñen sobre diferentes culturas.",
+                books: [8, 1, 12]
+            },
+            "Miguel Ángel Vargas": {
+                name: "Miguel Ángel Vargas",
+                university: "Universidad EAFIT",
+                career: "Economía",
+                rating: 4.6,
+                exchanges: 28,
+                bio: "Economista apasionado por entender los sistemas complejos a través de la lectura. Busco libros que combinen teoría económica con aplicaciones prácticas.",
+                books: [9, 5, 7]
+            },
+            "Catalina Gómez": {
+                name: "Catalina Gómez",
+                university: "Universidad Externado de Colombia",
+                career: "Derecho",
+                rating: 4.8,
+                exchanges: 35,
+                bio: "Abogada especializada en derecho constitucional. Mi biblioteca se enfoca en textos jurídicos, filosofía del derecho y historia legal colombiana.",
+                books: [10, 8, 6]
+            },
+            "Juan Pablo Díaz": {
+                name: "Juan Pablo Díaz",
+                university: "Universidad de Medellín",
+                career: "Periodismo",
+                rating: 4.3,
+                exchanges: 19,
+                bio: "Periodista en formación con interés en la crónica y el reportaje de investigación. Busco historias reales que inspiren cambio social.",
+                books: [11, 4, 10]
+            },
+            "Patricia Morales": {
+                name: "Patricia Morales",
+                university: "Universidad del Quindío",
+                career: "Educación",
+                rating: 4.7,
+                exchanges: 32,
+                bio: "Educadora con misión de fomentar la lectura desde temprana edad. Especialista en literatura infantil y pedagogía de la lectura.",
+                books: [12, 1, 3]
+            }
+        };
+
+        // Sample chat data
+        const chatData = [
+            {
+                id: 1,
+                name: "Carlos Rodríguez",
+                book: "Cien años de soledad",
+                lastMessage: "¿El libro todavía está disponible?",
+                time: "2:30 PM",
+                unread: true,
+                messages: [
+                    { text: "Hola, estoy interesado en tu libro.", sent: false, time: "2:15 PM" },
+                    { text: "¡Hola! Sí, todavía está disponible.", sent: true, time: "2:20 PM" },
+                    { text: "¿El libro todavía está disponible?", sent: false, time: "2:30 PM" }
+                ]
+            },
+            {
+                id: 2,
+                name: "María González",
+                book: "El amor en los tiempos del cólera",
+                lastMessage: "Claro, podemos vernos mañana en la biblioteca.",
+                time: "Ayer",
+                unread: false,
+                messages: [
+                    { text: "Hola, me gustaría intercambiar por tu libro.", sent: false, time: "Ayer, 4:30 PM" },
+                    { text: "¡Excelente! ¿Qué tienes para ofrecer?", sent: true, time: "Ayer, 5:00 PM" },
+                    { text: "Tengo 'Doña Bárbara' de Rómulo Gallegos.", sent: false, time: "Ayer, 5:15 PM" },
+                    { text: "Claro, podemos vernos mañana en la biblioteca.", sent: true, time: "Ayer, 5:30 PM" }
+                ]
+            },
+            {
+                id: 3,
+                name: "Luis Martínez",
+                book: "La hojarasca",
+                lastMessage: "¡Gracias por la respuesta rápida!",
+                time: "Hace 2 días",
+                unread: false,
+                messages: [
+                    { text: "¿El libro está en buenas condiciones?", sent: false, time: "Hace 2 días, 10:00 AM" },
+                    { text: "Sí, está en condición regular con algunas anotaciones.", sent: true, time: "Hace 2 días, 10:15 AM" },
+                    { text: "¡Gracias por la respuesta rápida!", sent: false, time: "Hace 2 días, 10:30 AM" }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const views = document.querySelectorAll('.view');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const booksGrid = document.getElementById('booksGrid');
+        const searchBar = document.getElementById('searchBar');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const chatList = document.getElementById('chatList');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const toast = document.getElementById('toast');
+
+        // Current state
+        let currentFilter = 'all';
+        let currentBook = null;
+        let currentChat = 1;
+        let currentUser = null;
+
+        // Initialize the app
+        function init() {
+            renderBooks(booksData);
+            renderChatList();
+            renderChatMessages(currentChat);
+            setupEventListeners();
+        }
+
+        // Render books
+        function renderBooks(books) {
+            booksGrid.innerHTML = '';
+            books.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.innerHTML = `
+                    <div class="book-cover">
+                        <img src="${book.cover}" alt="${book.title}" onerror="this.src='https://picsum.photos/seed/book${book.id}/400/600.jpg'">
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">${book.author}</p>
+                        <div class="book-owner" data-owner="${book.owner}">
+                            <i class="fas fa-user"></i>
+                            <span>${book.owner}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to book card
+                bookCard.addEventListener('click', (e) => {
+                    if (!e.target.closest('.book-owner')) {
+                        showBookDetails(book);
+                    }
+                });
+                
+                // Add click event to owner
+                const ownerElement = bookCard.querySelector('.book-owner');
+                ownerElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showUserProfile(book.owner);
+                });
+                
+                booksGrid.appendChild(bookCard);
+            });
+        }
+
+        // Render chat list
+        function renderChatList() {
+            chatList.innerHTML = '';
+            chatData.forEach(chat => {
+                const chatItem = document.createElement('li');
+                chatItem.className = `chat-item ${chat.id === currentChat ? 'active' : ''}`;
+                chatItem.innerHTML = `
+                    <div class="chat-item-header">
+                        <span>${chat.name}</span>
+                        <span>${chat.time}</span>
+                    </div>
+                    <div class="chat-item-preview">${chat.lastMessage}</div>
+                `;
+                chatItem.addEventListener('click', () => selectChat(chat.id));
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        // Render chat messages
+        function renderChatMessages(chatId) {
+            const chat = chatData.find(c => c.id === chatId);
+            if (!chat) return;
+
+            chatMessages.innerHTML = '';
+            chat.messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.sent ? 'sent' : 'received'}`;
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">
+                        ${message.text}
+                        <div class="message-time">${message.time}</div>
+                    </div>
+                `;
+                chatMessages.appendChild(messageDiv);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show book details
+        function showBookDetails(book) {
+            currentBook = book;
+            document.getElementById('bookDetailsCover').src = book.cover;
+            document.getElementById('bookDetailsTitle').textContent = book.title;
+            document.getElementById('bookDetailsAuthor').textContent = `por ${book.author}`;
+            document.getElementById('bookDetailsOwner').textContent = book.owner;
+            document.getElementById('bookDetailsUniversity').textContent = book.university;
+            document.getElementById('bookDetailsCategory').textContent = book.category === 'textbooks' ? 'Texto' : 
+                                                                         book.category === 'fiction' ? 'Ficción' :
+                                                                         book.category === 'non-fiction' ? 'No Ficción' : 'Referencia';
+            document.getElementById('bookDetailsCondition').textContent = book.condition + ' Estado';
+            document.getElementById('bookDetailsPrice').textContent = book.price;
+            document.getElementById('bookDetailsDescription').textContent = book.description;
+            
+            switchView('book-details');
+        }
+
+        // Show user profile
+        function showUserProfile(userName) {
+            const user = usersData[userName];
+            if (!user) return;
+            
+            currentUser = user;
+            
+            // Update profile header
+            const initials = user.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileUniversity').textContent = user.university;
+            document.getElementById('profileCareer').textContent = user.career;
+            document.getElementById('profileBio').textContent = user.bio;
+            document.getElementById('profileBooksCount').textContent = user.books.length;
+            
+            // Update rating
+            const ratingElement = document.getElementById('profileRating');
+            const fullStars = Math.floor(user.rating);
+            const hasHalfStar = user.rating % 1 !== 0;
+            let starsHTML = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fas fa-star"></i>';
+            }
+            if (hasHalfStar) {
+                starsHTML += '<i class="fas fa-star-half-alt"></i>';
+            }
+            for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+            starsHTML += `<span>${user.rating} (${user.exchanges} intercambios)</span>`;
+            ratingElement.innerHTML = starsHTML;
+            
+            // Render user's books with loading state
+            const profileBooks = document.getElementById('profileBooks');
+            profileBooks.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                profileBooks.innerHTML = '';
+                
+                if (user.books.length === 0) {
+                    profileBooks.innerHTML = '<p style="text-align: center; color: var(--text-light);">Este usuario no tiene libros disponibles actualmente.</p>';
+                    return;
+                }
+                
+                user.books.forEach(bookId => {
+                    const book = booksData.find(b => b.id === bookId);
+                    if (book) {
+                        const bookCard = document.createElement('div');
+                        bookCard.className = 'profile-book-card';
+                        bookCard.innerHTML = `
+                            <div class="profile-book-cover">
+                                <img src="${book.cover}" alt="${book.title}" onerror="this.src='https://picsum.photos/seed/profile${book.id}/200/300.jpg'">
+                            </div>
+                            <div class="profile-book-info">
+                                <div class="profile-book-title">${book.title}</div>
+                                <div class="profile-book-price">${book.price}</div>
+                            </div>
+                        `;
+                        bookCard.addEventListener('click', () => showBookDetails(book));
+                        profileBooks.appendChild(bookCard);
+                    }
+                });
+            }, 500);
+            
+            switchView('profile');
+        }
+
+        // Select chat
+        function selectChat(chatId) {
+            currentChat = chatId;
+            const chat = chatData.find(c => c.id === chatId);
+            if (chat) {
+                document.getElementById('chatHeaderName').textContent = chat.name;
+                document.getElementById('chatHeaderBook').textContent = chat.book;
+                
+                // Update avatar
+                const user = usersData[chat.name];
+                if (user) {
+                    const initials = user.name.split(' ').map(n => n[0]).join('');
+                    document.getElementById('chatHeaderAvatar').textContent = initials;
+                }
+                
+                renderChatMessages(chatId);
+                renderChatList();
+            }
+        }
+
+        // Send message
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            const chat = chatData.find(c => c.id === currentChat);
+            if (chat) {
+                const now = new Date();
+                const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                chat.messages.push({
+                    text: text,
+                    sent: true,
+                    time: time
+                });
+                
+                chat.lastMessage = text;
+                chat.time = time;
+                
+                renderChatMessages(currentChat);
+                renderChatList();
+                messageInput.value = '';
+                
+                // Simulate a response after a delay
+                setTimeout(() => {
+                    chat.messages.push({
+                        text: "¡Gracias por tu mensaje! Te responderé pronto.",
+                        sent: false,
+                        time: time
+                    });
+                    
+                    chat.lastMessage = "¡Gracias por tu mensaje! Te responderé pronto.";
+                    chat.time = time;
+                    
+                    renderChatMessages(currentChat);
+                    renderChatList();
+                }, 2000);
+            }
+        }
+
+        // Switch view
+        function switchView(viewName) {
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.view === viewName) {
+                    link.classList.add('active');
+                }
+            });
+            
+            document.getElementById(viewName).classList.add('active');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    switchView(link.dataset.view);
+                });
+            });
+
+            // Search
+            searchBtn.addEventListener('click', () => {
+                const searchTerm = searchBar.value.toLowerCase();
+                const filteredBooks = booksData.filter(book => 
+                    book.title.toLowerCase().includes(searchTerm) || 
+                    book.author.toLowerCase().includes(searchTerm)
+                );
+                renderBooks(filteredBooks);
+                
+                if (filteredBooks.length === 0) {
+                    showToast('No se encontraron libros que coincidan con tu búsqueda.');
+                }
+            });
+
+            searchBar.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // Filters
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    currentFilter = btn.dataset.filter;
+                    let filteredBooks = booksData;
+                    
+                    if (currentFilter !== 'all') {
+                        filteredBooks = booksData.filter(book => book.category === currentFilter);
+                    }
+                    
+                    renderBooks(filteredBooks);
+                });
+            });
+
+            // Book actions
+            document.getElementById('contactOwnerBtn').addEventListener('click', () => {
+                switchView('chat');
+                showToast('Abriendo chat con el dueño del libro...');
+            });
+
+            document.getElementById('exchangeBtn').addEventListener('click', () => {
+                showToast('¡Solicitud de intercambio enviada! El dueño será notificado.');
+            });
+
+            // Book details owner click
+            document.getElementById('bookDetailsOwnerItem').addEventListener('click', () => {
+                if (currentBook) {
+                    showUserProfile(currentBook.owner);
+                }
+            });
+
+            // Chat header avatar click
+            document.getElementById('chatHeaderAvatar').addEventListener('click', () => {
+                const chat = chatData.find(c => c.id === currentChat);
+                if (chat) {
+                    showUserProfile(chat.name);
+                }
+            });
+
+            // Chat
+            sendMessageBtn.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
